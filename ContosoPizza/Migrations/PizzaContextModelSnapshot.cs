@@ -24,6 +24,8 @@ namespace ContosoPizza.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("SauceId")
@@ -42,7 +44,12 @@ namespace ContosoPizza.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsVegan")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -56,17 +63,32 @@ namespace ContosoPizza.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Name")
+                    b.Property<decimal>("Calories")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("PizzaId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PizzaId");
+                    b.ToTable("Toppings");
+                });
 
-                    b.ToTable("Toppinngs");
+            modelBuilder.Entity("PizzaTopping", b =>
+                {
+                    b.Property<int>("PizzasId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ToppingsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PizzasId", "ToppingsId");
+
+                    b.HasIndex("ToppingsId");
+
+                    b.ToTable("PizzaTopping");
                 });
 
             modelBuilder.Entity("ContosoPizza.Models.Pizza", b =>
@@ -78,16 +100,19 @@ namespace ContosoPizza.Migrations
                     b.Navigation("Sauce");
                 });
 
-            modelBuilder.Entity("ContosoPizza.Models.Topping", b =>
+            modelBuilder.Entity("PizzaTopping", b =>
                 {
                     b.HasOne("ContosoPizza.Models.Pizza", null)
-                        .WithMany("Toppings")
-                        .HasForeignKey("PizzaId");
-                });
+                        .WithMany()
+                        .HasForeignKey("PizzasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("ContosoPizza.Models.Pizza", b =>
-                {
-                    b.Navigation("Toppings");
+                    b.HasOne("ContosoPizza.Models.Topping", null)
+                        .WithMany()
+                        .HasForeignKey("ToppingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
